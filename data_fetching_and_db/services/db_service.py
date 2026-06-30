@@ -1,7 +1,7 @@
 # services/db_service.py
-
+import pandas as pd
+from sqlalchemy import create_engine
 import psycopg2
-
 from data_fetching_and_db.config.config_ import DB_CONFIG
 
 
@@ -78,25 +78,62 @@ def insert_daily_record(data):
         conn.close()
         
 def insert_predicted_data(data):
+
     conn = get_connection()
+
     try:
-        query = """INSERT INTO predicted_values(datetime,pm25,pm10,aqi,temp)
-                   VALUES(
-                       %(datetime)s,
-                       %(pm25)s,
-                       %(pm10)s,
-                       %(aqi)s,
-                       %(temp)s  
-                   )
-                   ON CONFLICT (datetime)
-                   DO UPDATE SET
-                   pm25 = EXCLUDED.pm25,
-                   pm10 = EXCLUDED.pm10,
-                   aqi = EXCLUDED.aqi,
-                   temp = EXCLUDED.temp;
-                """
+
+        query = """
+        INSERT INTO predicted_values (
+            prediction_date,
+            predicted_pm25,
+            predicted_pm10,
+            predicted_aqi,
+            predicted_temperature
+        )
+        VALUES (
+            %(datetime)s,
+            %(pm25)s,
+            %(pm10)s,
+            %(aqi)s,
+            %(temp)s
+        )
+        ON CONFLICT (prediction_date)
+        DO UPDATE SET
+            predicted_pm25 = EXCLUDED.predicted_pm25,
+            predicted_pm10 = EXCLUDED.predicted_pm10,
+            predicted_aqi = EXCLUDED.predicted_aqi,
+            predicted_temperature = EXCLUDED.predicted_temperature;
+        """
+
         with conn.cursor() as cur:
             cur.execute(query, data)
+
         conn.commit()
+
     finally:
         conn.close()
+        
+class AQIDatabase:
+
+    def __init__(self, db_url):
+
+        self.engine = create_engine(db_url)
+
+    def get_recent_history(self, days=15):
+
+        query = f"""
+        SELECT *
+        FROM aqi_daily
+        ORDER BY datetime DESC
+        LIMIT {days}
+        """
+
+        df = pd.read_sql(query, self.engine)
+
+        return (
+            df
+            .sort_values("datetime")
+            .reset_index(drop=True)
+        )
+        

@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 
-from src.features.db_service import AQIDatabase
+from .db_service import AQIDatabase
 
 from src.features.feature_master_pipeline import (
     prepare_model_input
