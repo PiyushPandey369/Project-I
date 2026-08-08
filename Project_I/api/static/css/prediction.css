@@ -1,0 +1,45 @@
+body{
+    margin:0;
+    background:#eef3ff;
+    font-family:Arial,sans-serif;
+}
+
+.container{
+    width:90%;
+    max-width:1200px;
+    margin:auto;
+    padding:40px;
+}
+
+.prediction-card{
+    background:#4f46e5;
+    color:white;
+    text-align:center;
+    padding:30px;
+    border-radius:16px;
+    margin-bottom:30px;
+}
+
+.prediction-card p{
+    font-size:48px;
+    font-weight:bold;
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+    gap:20px;
+}
+
+.card{
+    background:white;
+    border-radius:12px;
+    padding:20px;
+    box-shadow:0 5px 15px rgba(0,0,0,.1);
+    text-align:center;
+}
+
+.card p{
+    font-size:30px;
+    font-weight:bold;
+}
